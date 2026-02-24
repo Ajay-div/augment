@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="https://aframe.io/releases/1.4.1/aframe.min.js"></script>
+  <script src="../../src/image-target/aframe.js" type="module"></script>
+
+  <style>
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial;
+    }
+
+    a-scene {
+      position: fixed;
+      inset: 0;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: 100% !important
+    }
+
+    /* Toast */
+    #statusMsg {
+      position: fixed;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #111;
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 22px;
+      font-size: 14px;
+      opacity: 0;
+      transition: .3s;
+      z-index: 9999;
+    }
+
+    #statusMsg.show {
+      opacity: 1
+    }
+
+    /* Bottom info panel */
+    .info-card {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #fff;
+      border-radius: 22px 22px 0 0;
+      box-shadow: 0 -8px 24px rgba(0, 0, 0, .25);
+      height: 90px;
+      overflow: hidden;
+      transition: .3s;
+      display: none;
+      z-index: 9999;
+    }
+
+    .info-card.open {
+      height: 60vh
+    }
+
+    .card-header {
+      text-align: center;
+      padding: 14px;
+    }
+
+    .handle {
+      width: 50px;
+      height: 5px;
+      background: #ccc;
+      border-radius: 10px;
+      margin: 6px auto 10px;
+    }
+
+    .card-body {
+      padding: 14px;
+      height: calc(100% - 110px);
+      overflow-y: auto;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="statusMsg"></div>
+
+  <div id="infoCard" class="info-card">
+    <div id="cardHeader" class="card-header">
+      <div class="handle"></div>
+      <h3 id="cardTitle">No Object</h3>
+      <small>Swipe / tap for details</small>
+    </div>
+    <div id="cardBody" class="card-body"></div>
+  </div>
+
+  <a-scene mindar-image="imageTargetSrc: ./assets/targets.mind; filterMinCF:0.001; filterBeta:0.01"
+    vr-mode-ui="enabled:false">
+
+    <!-- Lighting -->
+    <a-light type="ambient" intensity="1.3"></a-light>
+    <a-light type="directional" position="1 2 1" intensity="1"></a-light>
+
+    <a-assets>
+      <a-asset-item id="m1" src="./assets/model1.glb"></a-asset-item>
+      <a-asset-item id="m2" src="./assets/model2.glb"></a-asset-item>
+      <a-asset-item id="m3" src="./assets/model3.glb"></a-asset-item>
+      <a-asset-item id="m4" src="./assets/model4.glb"></a-asset-item>
+      <a-asset-item id="m5" src="./assets/model5.glb"></a-asset-item>
+      <a-asset-item id="m6" src="./assets/model6.glb"></a-asset-item>
+    </a-assets>
+
+    <a-camera look-controls="enabled:false"></a-camera>
+
+    <!-- Targets -->
+
+    <a-entity mindar-image-target="targetIndex:0" id="target0">
+      <a-gltf-model id="obj1" src="#m1" scale="1 1 1" position="0 0.15 0"></a-gltf-model>
+    </a-entity>
+
+    <a-entity mindar-image-target="targetIndex:1" id="target1">
+      <a-gltf-model id="obj2" src="#m2" scale="2.5 2.5 2.5" position="0 0.15 0"></a-gltf-model>
+    </a-entity>
+
+    <a-entity mindar-image-target="targetIndex:2" id="target2">
+      <a-gltf-model id="obj3" src="#m3" scale="8 8 8" position="0 0.1 0">
+      </a-gltf-model>
+    </a-entity>
+
+    <a-entity mindar-image-target="targetIndex:3" id="target3">
+      <a-gltf-model id="obj4" src="#m4" scale="0.5 0.5 0.5" position="0 0.15 0"></a-gltf-model>
+    </a-entity>
+
+    <a-entity mindar-image-target="targetIndex:4" id="target4">
+      <a-gltf-model id="obj5" src="#m5" scale="0.1 0.1 0.1" position="0 0.15 0"></a-gltf-model>
+    </a-entity>
+
+    <a-entity mindar-image-target="targetIndex:5" id="target5">
+      <a-gltf-model id="obj6" src="#m6" scale="0.5 0.5 0.5" position="0 0.15 0"></a-gltf-model>
+    </a-entity>
+
+  </a-scene>
+
+  <script>
+    const toast = document.getElementById("statusMsg");
+    const card = document.getElementById("infoCard");
+    const title = document.getElementById("cardTitle");
+    const body = document.getElementById("cardBody");
+
+    document.getElementById("cardHeader").onclick = () => {
+      card.classList.toggle("open");
+    };
+
+    function show(msg) {
+      toast.innerText = msg;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 1800);
+    }
+
+    function rotate(model) {
+      model.setAttribute("animation", {
+        property: "rotation",
+        to: "0 360 0",
+        dur: 1400,
+        easing: "easeOutQuad",
+        loop: false
+      });
+    }
+
+    function showInfo(name, info) {
+      title.innerText = name;
+      body.innerHTML = info;
+      card.style.display = "block";
+    }
+
+    /* MUST MATCH targets.mind ORDER */
+    const models = [
+      {
+        id: "obj1",
+        name: "Hard Disk Drive (HDD)",
+        info: `
+          <b>What it is:</b> A non-volatile data storage device that stores and retrieves digital data using magnetic storage on rapidly rotating platters.<br><br>
+          <b>How it works:</b> Data is read and written by a read/write head that floats on a thin film of air above the spinning magnetic platters. The platters spin at speeds of 5,400 to 7,200 RPM (up to 15,000 RPM in enterprise drives).<br><br>
+          <b>Key Components:</b><br>
+           <b>Platters</b> Aluminum or glass disks coated with magnetic material<br>
+           <b>Read/Write Head</b>Tiny electromagnetic device on an actuator arm<br>
+           <b>Spindle Motor</b> Rotates the platters at constant speed<br>
+           <b>Actuator Arm</b> Positions the head over the correct track<br>
+           <b>PCB Controller</b> Circuit board that manages data flow<br><br>
+          <b>Storage Capacity:</b> Typically 500 GB to 20 TB<br>
+          <b>Invented:</b> 1956 by IBM (RAMAC 305)<br>
+          <b>Applications:</b> Desktop computers, ptops, data centers, NAS servers, surveillance systems, and gaming consoles.
+        `
+      },
+      {
+        id: "obj2",
+        name: "Electric Motor",
+        info: `
+          <b>What it is:</b> An electromechanical device that converts electrical energy into mechanical energy (rotational motion).<br><br>
+          <b>How it works:</b> When electric current flows through a coil placed in a magnetic field, it experiences a force (Lorentz force) that causes the coil to rotate. This is based on Fleming's Left-Hand Rule and Faraday's law of electromagnetic induction.<br><br>
+          <b>Key Components:</b><br>
+           <b>Stator</b> Stationary part that generates the magnetic field<br>
+           <b>Rotor (Armature)</b> Rotating part connected to the output shaft<br>
+           <b>Commutator</b> Reverses current direction to maintain rotation (in DC motors)<br>
+           <b>Brushes</b> Conduct current between stationary and rotating parts<br>
+           <b>Bearings</b> Reduce friction and support the rotor shaft<br><br>
+          <b>Types:</b> DC Motor, AC Motor (Induction & Synchronous), Stepper Motor, Servo Motor, BLDC Motor<br>
+          <b>Efficiency:</b> 85% 97% depending on type<br>
+          <b>Applications:</b> Industrial machinery, electric vehicles, home appliances (fans, washing machines), robotics, drones, and power tools.
+        `
+      },
+      {
+        id: "obj3",
+        name: "WiFi Chip (Wireless IC)",
+        info: `
+          <b>What it is:</b> An integrated circuit (IC) that enables wireless communication by transmitting and receiving data over radio frequency signals using the IEEE 802.11 standard.<br><br>
+          <b>How it works:</b> The chip modulates digital data into radio waves (typically 2.4 GHz or 5 GHz bands), transmits them via an antenna, and demodulates incoming signals back into digital data. It uses techniques like OFDM (Orthogonal Frequency Division Multiplexing) for efficient data transfer.<br><br>
+          <b>Key Components:</b><br>
+           <b>RF Transceiver</b> Sends and receives radio signals<br>
+           <b>Baseband Processor</b> Handles data encoding/decoding<br>
+           <b>Power Amplifier</b> Boosts signal strength for transmission<br>
+           <b>Antenna Interface</b> Connects to external or integrated antennas<br>
+           <b>MAC Controller</b> Manages access to the wireless medium<br><br>
+          <b>Standards:</b> WiFi 4 (802.11n), WiFi 5 (802.11ac), WiFi 6 (802.11ax), WiFi 7 (802.11be)<br>
+          <b>Speed:</b> Up to 46 Gbps (WiFi 7)<br>
+          <b>Applications:</b> Smartphones, laptops, IoT devices, smart home systems, routers, wearables, and embedded systems.
+        `
+      },
+      {
+        id: "obj4",
+        name: "Typewriter",
+        info: `
+          <b>What it is:</b> A mechanical or electromechanical writing machine that produces text on paper by pressing inked keys that strike through a ribbon onto the page.<br><br>
+          <b>How it works:</b> When a key is pressed, a lever mechanism swings a type bar with a molded character towards the paper. The character strikes an inked ribbon, transferring the ink impression onto the paper. A carriage mechanism advances the paper one space after each keystroke.<br><br>
+          <b>Key Components:</b><br>
+           <b>Keyboard</b> – Set of keys arranged in QWERTY layout (designed in 1873)<br>
+           <b>Type Bars</b> – Metal arms with characters at the tip<br>
+           <b>Ink Ribbon</b> – Fabric or nylon ribbon soaked in ink<br>
+           <b>Platen (Roller)</b> – Rubber cylinder that holds the paper<br>
+           <b>Carriage</b> – Moves the paper left after each keystroke<br>
+           <b>Bell</b> – Rings near end of line to alert the typist<br><br>
+          <b>Invented:</b> 1868 by Christopher Latham Sholes<br>
+          <b>Historical Impact:</b> Revolutionized office work, journalism, and literature. Enabled faster document creation before computers.<br>
+          <b>Applications:</b> Office documentation, journalism, legal documents, personal correspondence, and creative writing.
+        `
+      },
+      {
+        id: "obj5",
+        name: "Jet Aircraft",
+        info: `
+          <b>What it is:</b> A fixed-wing aircraft powered by jet engines that generate thrust by expelling high-speed exhaust gases, enabling flight at high speeds and altitudes.<br><br>
+          <b>How it works:</b> Jet engines operate on Newton's Third Law — they suck in air, compress it, mix it with fuel, ignite the mixture, and expel hot gases at high speed from the back. This creates forward thrust. The wings generate lift using Bernoulli's principle as air flows faster over the curved upper surface.<br><br>
+          <b>Key Components:</b><br>
+           <b>Jet Engine (Turbofan)</b> – Produces thrust via air compression and combustion<br>
+           <b>Fuselage</b> – Main body housing passengers, cargo, and systems<br>
+           <b>Wings</b> – Generate aerodynamic lift; house fuel tanks<br>
+           <b>Cockpit / Avionics</b> – Flight instruments, navigation, and autopilot systems<br>
+           <b>Landing Gear</b> – Retractable wheels for takeoff and landing<br>
+           <b>Control Surfaces</b> – Ailerons, elevators, rudder for maneuvering<br><br>
+          <b>Speed:</b> Commercial jets cruise at 850–900 km/h (Mach 0.8); military jets exceed Mach 2+<br>
+          <b>Altitude:</b> 10,000 – 15,000 meters (commercial); 25,000+ meters (military)<br>
+          <b>Applications:</b> Commercial aviation, military defense, cargo transport, private travel, and aerial reconnaissance.
+        `
+      },
+      {
+        id: "obj6",
+        name: "Car (Automobile)",
+        info: `
+          <b>What it is:</b> A self-propelled wheeled vehicle designed for road transport, powered by an internal combustion engine (ICE), electric motor, or hybrid powertrain.<br><br>
+          <b>How it works:</b> In an ICE car, fuel (petrol/diesel) is combusted inside cylinders, pushing pistons that rotate a crankshaft. This rotational energy is transmitted through the transmission and drivetrain to the wheels. In electric cars, a battery powers an electric motor directly connected to the wheels.<br><br>
+          <b>Key Components:</b><br>
+           <b>Engine / Motor</b> – Converts fuel/electrical energy into motion<br>
+           <b>Transmission</b> – Transfers power from engine to wheels (manual/automatic)<br>
+           <b>Chassis & Body</b> – Structural frame and exterior shell<br>
+           <b>Suspension</b> – Absorbs road shocks for a smooth ride<br>
+           <b>Braking System</b> – Disc/drum brakes with ABS for safe stopping<br>
+           <b>Steering System</b> – Rack and pinion mechanism for direction control<br>
+           <b>Electrical System</b> – Battery, alternator, ECU, sensors, and infotainment<br><br>
+          <b>Invented:</b> 1886 by Karl Benz (Benz Patent-Motorwagen)<br>
+          <b>Top Speed:</b> Typical sedan: 180–250 km/h; Supercars: 350+ km/h<br>
+          <b>Applications:</b> Personal transport, commercial fleets, emergency services, motorsport, ride-sharing, and autonomous driving research.
+        `
+      }
+    ];
+
+    models.forEach((m, i) => {
+      const target = document.getElementById(`target${i}`);
+      const model = document.getElementById(m.id);
+
+      target.addEventListener("targetFound", () => {
+        show(m.name + " detected");
+        showInfo(m.name, m.info);
+        rotate(model);
+      });
+
+      target.addEventListener("targetLost", () => {
+        card.style.display = "none";
+        card.classList.remove("open");
+      });
+    });
+  </script>
+
+</body>
+
+</html>

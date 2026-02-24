@@ -1,30 +1,194 @@
 <!DOCTYPE html>
-<html>
-    <head>
+<html lang="en">
 
-    </head>
-    <body>
-        <h1>Examples</h1>
-        <h2>Image-Tracking</h2>
-        <ul>
-            <li><a href="examples/image-tracking/compile.html">compile</a> </li>
-            <li><a href="examples/image-tracking/debug.html">debug</a></li>
-            <li><a href="examples/image-tracking/example1.html">Example 1</a></li>
-            <li><a href="examples/image-tracking/example2.html">Example 2</a></li>
-            <li><a href="examples/image-tracking/example3.html">Example 3</a></li>
-            <li><a href="examples/image-tracking/example4.html">Example 4</a></li>
-            <li><a href="examples/image-tracking/three.html">Three</a></li>
-        </ul>
-        <h2>Face-Tracking</h2>
-        <ul>
-            <li><a href="examples/face-tracking/debug.html">debug</a></li>
-            <li><a href="examples/face-tracking/example1.html">Example 1</a></li>
-            <li><a href="examples/face-tracking/example2.html">Example 2</a></li>
-            <li><a href="examples/face-tracking/example3.html">Example 3</a></li>
-            <li><a href="examples/face-tracking/three-css.html">three-CSS</a></li>
-            <li><a href="examples/face-tracking/three-facemesh.html">three-FaceMesh</a></li>
-            <li><a href="examples/face-tracking/three.html">three</a></li>
-            <li><a href="examples/face-tracking/three-blendshapes.html">three-blendshapes</a></li>
-        </ul>
-    </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AR Dashboard</title>
+
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: #0f172a;
+      --border: #1e293b;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #3b82f6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Inter, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-top: 64px;
+    }
+
+    /* ---------- TOP BAR ---------- */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 10;
+    }
+
+    header .title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    header a {
+      text-decoration: none;
+      font-size: 0.8rem;
+      color: var(--accent);
+      font-weight: 500;
+      opacity: 0.7;
+      /* dev-only feel */
+    }
+
+    /* ---------- MAIN ---------- */
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin-bottom: 36px;
+      line-height: 1.4;
+    }
+
+    .section-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    /* ---------- HERO CARD ---------- */
+    .hero {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px;
+    }
+
+    .hero-box {
+      max-width: 420px;
+      margin: 0 auto;
+      text-align: center;
+      padding: 30px 26px 30px 30px;
+      /* subtle asymmetry */
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.01);
+    }
+
+    .hero-title {
+      font-size: 1.6rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      margin-bottom: 6px;
+    }
+
+    .hero-desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 26px;
+    }
+
+    /* ---------- ACTION BUTTON ---------- */
+    .hero-action {
+      display: inline-block;
+      padding: 12px 44px;
+      /* wider horizontally */
+      border-radius: 8px;
+      background: var(--accent);
+      color: #ffffff;
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+
+    .hero-action:hover {
+      background: #2563eb;
+    }
+
+    .hero-action:active {
+      transform: translateY(1px);
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin: 60px 0 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- TOP BAR -->
+  <header>
+    <div class="title">AR Dashboard</div>
+    <a href="examples/image-tracking/compile.html">Compile</a>
+  </header>
+
+  <main>
+    <h1>Image Tracking</h1>
+    <div class="subtitle">
+      Web-based augmented reality using image targets.<br />
+      Designed for quick demos and academic evaluation.
+    </div>
+
+    <div class="section-label">Primary Experience</div>
+
+    <div class="hero">
+      <div class="hero-box">
+        <div class="hero-title">Augment</div>
+        <div class="hero-desc">
+          Place and view 3D models on real-world images
+        </div>
+
+        <!-- ONLY BUTTON IS CLICKABLE -->
+        <a class="hero-action" href="examples/image-tracking/multi-targets.html">
+          Open Experience
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    AR Web Application
+  </footer>
+
+</body>
+
 </html>
